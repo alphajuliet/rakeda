@@ -3,7 +3,7 @@
 
 (require rackunit
          rackunit/text-ui
-         "rakeda.rkt")
+         "main.rkt")
 
 (define-test-suite rakeda-tests
 
