@@ -6,6 +6,7 @@
 (provide (all-defined-out))
 
 (define r:curry (curry (λ (f a b) (f a b))))
+(define r:curryN (curry (λ (f . args) (apply f args))))
 
 ; Reverse two arguments
 (define r:flip
@@ -19,6 +20,8 @@
 (define r:map (r:curry map))
 (define r:filter (r:curry filter))
 (define r:group-by (r:curry group-by))
+(define r:reduce (r:curryN foldl))
+(define r:reduce-right (r:curryN foldr))
 
 ; Zip functions
 (define r:zip (curry map list))
@@ -38,6 +41,8 @@
 (define r:uniq remove-duplicates)
 (define r:count (r:curry count))
 (define r:flatten flatten)
+(define r:all (r:curry andmap))
+(define r:any (r:curry ormap))
 
 (define r:contains?
   (curry (λ (x lst)

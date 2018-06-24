@@ -20,14 +20,16 @@
              (define f (r:nth 2))
              (check-equal? (f '(1 2 3)) 3))
   
-  (test-case "r:map r:filter"
+  (test-case "Direct mappings"
              (check-equal? (r:map add1 '(1 2 3))
                            '(2 3 4))
              (define f (r:map add1))
              (check-equal? (f '(1 2 3))
-                          '(2 3 4))
-             (check-equal? (r:filter odd? '(1 2 3))
-                           '(1 3)))
+                           '(2 3 4))
+             (define g (r:filter odd?))
+             (check-equal? (g '(1 2 3))
+                           '(1 3))
+             (check-equal? (r:reduce + 1 '(1 2 3)) 7))
   (test-case "r:zip"
              (check-equal? (r:zip '(1 2) '(3 4))
                            '((1 3) (2 4))))
@@ -42,6 +44,13 @@
                            '(1 2))
              (check-equal? (r:drop 2 '(1 2 3 4))
                            '(3 4)))
+  (test-case "r:any and r:all"
+             (check-equal? (r:any odd? '(1 2 3)) #t)
+             (define f (r:any odd?))
+             (check-equal? (f '(2 4 6)) #f)
+             (check-equal? (r:all odd? '(1 2 3)) #f)
+             (check-equal? (r:all odd? '(1 3 5)) #t)) 
+
   (test-case "r:sort"
              (check-equal? (r:sort < '(3 2 1))
                            '(1 2 3)))
