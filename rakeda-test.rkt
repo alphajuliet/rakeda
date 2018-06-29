@@ -18,7 +18,8 @@
              (check-equal? (r:last '(1 2 3)) 3)
              (check-equal? (r:nth 2 '(1 2 3)) 3)
              (define f (r:nth 2))
-             (check-equal? (f '(1 2 3)) 3))
+             (check-equal? (f '(1 2 3)) 3)
+             (check-equal? (r:index-of 2 '(1 2 3)) 1))
   
   (test-case "Direct mappings"
              (check-equal? (r:map add1 '(1 2 3))
@@ -39,6 +40,10 @@
   (test-case "r:flatzip"
              (check-equal? (r:flatzip '(1 2) '(3 4))
                            '(1 3 2 4)))
+  #;(test-case "r:juxt"
+             (define fns '((r:add 1) (r:subtract 1)))
+             (check-equal? (r:juxt fns '(1 2 3)) '((2 3 4) (0 1 2))))
+  
   (test-case "r:take r:drop"
              (check-equal? (r:take 2 '(1 2 3))
                            '(1 2))

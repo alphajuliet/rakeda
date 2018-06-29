@@ -15,8 +15,9 @@
 (define r:head first)
 (define r:last last)
 (define r:nth (r:flip list-ref))
+(define r:index-of (r:flip index-of))
 
-; Direct correspondence
+; Direct mapping
 (define r:map (r:curry map))
 (define r:filter (r:curry filter))
 (define r:group-by (r:curry group-by))
@@ -31,26 +32,29 @@
 (define r:flatzip (compose flatten r:zip))
 
 ; Invert arguements
-(define r:take (curry r:flip take))
-(define r:drop (curry r:flip drop))
-(define r:sort (curry r:flip sort))
+(define r:take (r:curryN r:flip take))
+(define r:drop (r:curryN r:flip drop))
+(define r:sort (r:curryN r:flip sort))
 
 ; Various list functions
+; 1-argument
+(define r:flatten flatten)
+(define r:uniq remove-duplicates)
+
+; 2-argument
 (define r:append (r:curry append))
 (define r:prepend (curry (λ (x lst) (append (list x) lst))))
-(define r:uniq remove-duplicates)
 (define r:count (r:curry count))
-(define r:flatten flatten)
 (define r:all (r:curry andmap))
 (define r:any (r:curry ormap))
 
 (define r:contains?
-  (curry (λ (x lst)
+  (r:curry (λ (x lst)
            (if (findf (curry eq? x) lst)
                #t
                #f))))
 (define r:find
-  (curry (λ (x lst)
+  (r:curry (λ (x lst)
            (if (member x lst)
                x
                #f))))
@@ -59,14 +63,15 @@
 (define r:union
   (compose r:uniq append))
 (define r:intersection
-  (curry (λ (lst1 lst2)
-           (r:uniq (r:filter (curry r:flip r:contains? lst1) lst2)))))
+  (r:curry (λ (lst1 lst2)
+           (r:uniq (r:filter (r:curryN r:flip r:contains? lst1)
+                             lst2)))))
 
 ; Math functions
-(define r:add (r:curry +))
+(define r:add      (r:curry +))
 (define r:subtract (r:curry -))
 (define r:multiply (r:curry *))
-(define r:divide (r:curry /))
-(define r:modulo (r:curry modulo))
+(define r:divide   (r:curry /))
+(define r:modulo   (r:curry modulo))
 
 ; The End
