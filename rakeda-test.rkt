@@ -85,6 +85,12 @@
              (check-equal? (r:flatten '((1 2 (3) ((4) 5))))
                            '(1 2 3 4 5)))
 
+  (test-case "Rotations"
+             (check-equal? (r:rotate-left 1 '(1 2 3))
+                           '(2 3 1))
+             (check-equal? (r:rotate-right 1 '(1 2 3))
+                           '(3 1 2)))
+
   (test-case "Math"
              (check-equal? (r:add 2 3) 5)
              (define inc (r:add 1))
