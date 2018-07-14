@@ -77,12 +77,20 @@
                     lst2)))
 
 ; List rotations
-(define/c (r:rotate-left n lst)
+(define (r:rotate-left lst)
   (r:append (cdr lst)
             (list (car lst))))
-(define/c (r:rotate-right n lst)
+(define (r:rotate-right lst)
   (r:append (list (r:last lst))
             (r:take (sub1 (length lst)) lst)))
+
+; Nest list
+; (r:nest-list fn n lst) → '((fn lst) (fn (fn list) (fn (fn (fn list)))... )
+(define (r:nest-list fn n lst)
+  (let ([x lst])
+    (for/list ([i (range n)])
+      (set! x (fn x))
+      (fn x))))
 
 ; Math functions
 (define r:add      (r:curry +))

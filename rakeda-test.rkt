@@ -86,10 +86,14 @@
                            '(1 2 3 4 5)))
 
   (test-case "Rotations"
-             (check-equal? (r:rotate-left 1 '(1 2 3))
+             (check-equal? (r:rotate-left '(1 2 3))
                            '(2 3 1))
-             (check-equal? (r:rotate-right 1 '(1 2 3))
+             (check-equal? (r:rotate-right '(1 2 3))
                            '(3 1 2)))
+
+  (test-case "Nest list"
+             (check-equal? (r:nest-list r:rotate-left 3 '(1 2 3))
+                           '((3 1 2) (1 2 3) (2 3 1))))
 
   (test-case "Math"
              (check-equal? (r:add 2 3) 5)
