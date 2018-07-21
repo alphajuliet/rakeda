@@ -8,14 +8,14 @@ This may eventually become a package.
 
 All functions of two or more arguments are curried by default.
 
+* `(>> x . fs)`: thread `x` through the list of functions `fs`. Essentially the
+same as `~>>` from the `threading` package.
+
 ### Currying
 
 * `(define/c (f...) (body))`: define a curried version of `(f...)`
 * `(r:curry f a b)`: return a curried version of `(f a b)`
 * `(r:curryN f args...)`: return a curried version of `(f args...)`
-
-* `(>> x . fs)`: thread `x` through the list of functions `fs`. Essentially the
-same as `~>>` from the `threading` package.
 
 ### (Mostly) existing list functions
 

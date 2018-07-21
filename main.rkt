@@ -1,7 +1,10 @@
-#lang racket
+#lang racket/base
 ; main.rkt
 ; Develop a similar set of Ramda JS functions in Racket
 ; Andrew 2018-06-23 
+
+(require racket/list
+         racket/function)
 
 (provide (all-defined-out))
 
