@@ -91,17 +91,17 @@
              (check-equal? (r:rotate-right '(1 2 3))
                            '(3 1 2)))
 
-  (test-case "Nest list"
-             (check-equal? (r:nest-list r:rotate-left 3 '(1 2 3))
-                           '((3 1 2) (1 2 3) (2 3 1))))
+  (test-case "Iterate function application"
+             (check-equal? (r:iterate r:rotate-left 2 '(1 2 3))
+                           '((1 2 3) (2 3 1) (3 1 2))))
 
   (test-case "Math"
-             (check-equal? (r:add 2 3) 5)
-             (define inc (r:add 1))
+             (check-equal? (r:+ 2 3) 5)
+             (define inc (r:+ 1))
              (check-equal? (inc 2) 3))
 
   (test-case "Composition"
-             (define f (compose (r:add 1) (r:multiply 3)))
+             (define f (compose (r:+ 1) (r:* 3)))
              (check-equal? (f 4) 13))
   )
 

@@ -5,12 +5,13 @@
 
 (require racket/list
          racket/string
-         racket/function)
+         racket/function
+         "compose.rkt")
 
 (provide (all-defined-out))
 
-; define/c → a pre-curried function definition
-(define-syntax-rule (define/c (fn args ...) body)
+; define/curry → a pre-curried function definition
+(define-syntax-rule (define/curry (fn args ...) body)
   (define fn (curry (λ (args ...) body))))
 
 (define r:curry (curry (λ (f a b) (f a b))))
@@ -27,7 +28,7 @@
 (define (false? x) (if x #f #t))
 
 ; Reverse two arguments
-(define/c (r:flip f a b)
+(define/curry (r:flip f a b)
   (apply f (list b a)))
 (define r:head first)
 (define r:last last)
@@ -41,11 +42,11 @@
 (define r:group-by (r:curry group-by))
 (define r:reduce (r:curryN foldl))
 (define r:reduce-right (r:curryN foldr))
-(define/c (r:juxt fs x) (map (λ (f) (f x)) fs))
+(define/curry (r:juxt fs x) (map (λ (f) (f x)) fs))
 
 ; Zip functions
 (define r:zip (curry map list))
-(define/c (r:zip-with fn lst1 lst2)
+(define/curry (r:zip-with fn lst1 lst2)
   (map (curry apply fn) (r:zip lst1 lst2)))
 (define r:flatzip (compose flatten r:zip))
 
@@ -63,28 +64,23 @@
 
 ; 2-argument
 (define r:append (r:curry append))
-(define/c (r:prepend x lst) (append (list x) lst))
+(define/curry (r:prepend x lst) (append (list x) lst))
 (define r:count (r:curry count))
 (define r:all (r:curry andmap))
 (define r:any (r:curry ormap))
 (define r:argmin (r:curry argmin))
 (define r:argmax (r:curry argmax))
 
-(define/c (r:contains? x lst)
-  (if (findf (curry eq? x) lst)
-      #t
-      #f))
-(define/c (r:find x lst)
-  (if (member x lst)
-      x
-      #f))
+(define/curry (r:contains? x lst)
+  (if (findf (curry eq? x) lst) #t #f))
+
+(define/curry (r:find x lst)
+  (if (member x lst) x #f))
 
 ; List union and intersections
-(define r:union
-  (compose r:uniq append))
-(define/c (r:intersection lst1 lst2)
-  (r:uniq (r:filter (r:curryN r:flip r:contains? lst1)
-                    lst2)))
+(define r:union (compose r:uniq append))
+(define/curry (r:intersection lst1 lst2)
+  (r:uniq (r:filter (r:curryN r:flip r:contains? lst1) lst2)))
 
 ; List rotations
 (define (r:rotate-left lst)
@@ -94,20 +90,20 @@
   (r:append (list (r:last lst))
             (r:take (sub1 (length lst)) lst)))
 
-; Nest list
-; (r:nest-list fn n lst) → '((fn lst) (fn (fn list) (fn (fn (fn list)))... )
-(define (r:nest-list fn n lst)
-  (let ([x lst])
-    (for/list ([i (range n)])
-      (set! x (fn x))
-      (fn x))))
+(define (r:iterate fn n x)
+;; Iterate a function over an argument
+;; (r:iterate fn n x) → '(x (fn x) (fn (fn x)) ... (fn^n x))
+  (for/fold ([acc (list x)])
+            ([i (range n)])
+            (let ([y (fn (last acc))])
+              (append acc (list y)))))
 
 ; Curried basic math functions
-(define r:add      (r:curry +))
-(define r:subtract (r:curry -))
-(define r:multiply (r:curry *))
-(define r:divide   (r:curry /))
-(define r:expt     (r:curry expt))
-(define r:modulo   (r:curry modulo))
+(define r:+       (r:curry +))
+(define r:-       (r:curry -))
+(define r:*       (r:curry *))
+(define r:/       (r:curry /))
+(define r:expt    (r:curry expt))
+(define r:modulo  (r:curry modulo))
 
 ; The End
