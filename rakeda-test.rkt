@@ -10,9 +10,14 @@
   #:before
   (λ () #t)
 
+  (test-case "Logic functions"
+             (define f (r/eq? 5))
+             (check-equal? (f 6) #f)
+             (check-equal? (true 34) #t))
+
   (test-case "r/flip"
-             (check-equal? (r/flip - 10 4)
-                           -6))
+             (check-equal? (r/flip - 10 4) -6))
+
   (test-case "r/head r/last r/nth"
              (check-equal? (r/head '(1 2 3)) 1)
              (check-equal? (r/last '(1 2 3)) 3)
@@ -40,9 +45,9 @@
   (test-case "r/flatzip"
              (check-equal? (r/flatzip '(1 2) '(3 4))
                            '(1 3 2 4)))
-  #;(test-case "r/juxt"
-             (define fns '((r/add 1) (r/subtract 1)))
-             (check-equal? (r/juxt fns '(1 2 3)) '((2 3 4) (0 1 2))))
+  (test-case "r/juxt"
+             (define fns (list (r/+ 2) (r/* 2)))
+             (check-equal? (r/juxt fns 10) '(12 20)))
   
   (test-case "r/take r/drop"
              (check-equal? (r/take 2 '(1 2 3))
@@ -64,26 +69,22 @@
                            '(5 1 2 3 4)))
   (test-case "r/prepend"
              (check-equal? (r/prepend 1 '(2 3))
-                           '(1 2 3)))
-  (test-case "r/contains"
+                           '(1 2 3))
+             (check-equal? (r/prepend 1 '()) '(1)))
+  (test-case "r/in?"
              (check-equal? (r/in? 2 '(1 2 3)) #t)
-             (check-equal? (r/in? 4 '(1 2 3)) #f))
-  
-  (test-case "r/find"
-             (check-equal? (r/find-in 2 '(1 2 3))
-                           2)
-             (check-equal? (r/find-in 5 '(1 2 3))
-                           #f))
-  (test-case "r/union"
+             (check-equal? (r/in? 4 '(1 2 3)) #f)
+             (check-equal? (r/find-in 2 '(1 2 3)) 2)
+             (check-equal? (r/find-in 5 '(1 2 3)) #f))
+
+  (test-case "Set functions"
              (check-equal? (r/union '(1 2 3) '(2 3 4))
-                           '(1 2 3 4)))
-  (test-case "r/intersection"
+                           '(1 2 3 4))
              (check-equal? (r/intersection '(1 2 3) '(2 3 4))
                            '(2 3)))
-  (test-case "r/count and r/flatten"
-             (check-equal? (r/count odd? '(1 2 3)) 2)
-             (check-equal? (r/flatten '((1 2 (3) ((4) 5))))
-                           '(1 2 3 4 5)))
+
+  (test-case "r/count"
+             (check-equal? (r/count odd? '(1 2 3)) 2))
 
   (test-case "Rotations"
              (check-equal? (r/rotate-left '(1 2 3))
