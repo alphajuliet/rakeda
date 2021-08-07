@@ -82,6 +82,9 @@
 (define/curry (r/find-in x lst)
   ;; r/find-in :: a -> [a] -> a | False
   (if (member x lst) x #f))
+(define (r/repeatedly n f)
+  (for/list ([_ (in-range n)])
+    (f)))
 
 ;; List union and intersections
 (define r/union (compose r/uniq append))

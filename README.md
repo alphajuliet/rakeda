@@ -57,6 +57,7 @@ This may eventually become a package.
 - r/prepend
 - r/in?
 - r/find-in
+- r/repeatedly
 - r/union
 - r/intersection
 - r/rotate-left
