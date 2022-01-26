@@ -8,7 +8,8 @@
 (require racket/list
          racket/string
          racket/function
-         "compose.rkt")
+         ;; "compose.rkt"
+         )
 
 ;;-----------------------
 ; define/curry → a pre-curried function definition
@@ -64,30 +65,44 @@
 (define r/reduce (r/curryN foldl))
 (define r/reduce-right (r/curryN foldr))
 
+(define/curry (map+ f x)
+  ;; Generic map that is polymorphic across lists and values
+  ;; map+ :: (a → b) → a → b
+  ;; map+ :: (a → b) → [a] → [b]
+  (if (list? x)
+      (r/map f x)
+      (f x)))
 ;;-----------------------
 ;; Additional list functions
 
 (define r/zip (curry map list))
+
 (define/curry (r/zip-with fn lst1 lst2)
   (map (curry apply fn) (r/zip lst1 lst2)))
+
 (define r/flatzip (compose flatten r/zip))
 
 (define (r/random-element lst)
   (r/nth (random (length lst)) lst))
+
 (define/curry (r/prepend x lst)
   (r/append (list x) lst))
+
 (define/curry (r/in? x lst)
   ;; r/in? :: a -> [a] -> Boolean
   (if (findf (r/eq? x) lst) #t #f))
+
 (define/curry (r/find-in x lst)
   ;; r/find-in :: a -> [a] -> a | False
   (if (member x lst) x #f))
+
 (define (r/repeatedly n f)
   (for/list ([_ (in-range n)])
     (f)))
 
 ;; List union and intersections
 (define r/union (compose r/uniq append))
+
 (define/curry (r/intersection lst1 lst2)
   ;; r/intersection :: [a] -> [a] -> [a]
   (r/uniq (r/filter (r/curryN r/flip r/in? lst1) lst2)))
@@ -101,6 +116,29 @@
   ;; r/rotate-right :: [a] -> [a]
   (r/append (list (r/last lst))
             (r/take (sub1 (length lst)) lst)))
+
+(define (r/map-pair fn pairs)
+  ;; Map a function over the values in a list of pairs
+  (map (λ (p) (cons (car p) (fn (cdr p)))) pairs))
+
+;;-----------------------
+;; Additional hash functions
+
+(define r/map-hash (r/flip hash-map))
+
+(define (r/filter-hash fn h)
+  ;; Filter a hash based on the given key/value pair
+  ;; r/filter-hash :: (k -> v -> Boolean) -> Hash k v -> Hash k v
+  (for/hash ([(key value) (in-hash h)]
+             #:when (fn key value))
+    (values key value)))
+
+(define (r/select-keys key-list h)
+  ;; Return just the key/value pairs in the given list
+  ;; r/select-keys :: List k -> Hash k v -> Hash k v
+  (for/hash ([(key value) (in-hash h)]
+             #:when (r/in? key key-list))
+    (values key value)))
 
 ;;-----------------------
 ;; Functional patterns
