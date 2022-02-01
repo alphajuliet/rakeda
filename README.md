@@ -63,6 +63,13 @@ This may eventually become a package.
 - r/rotate-left
 - rotate-right
 
+## Additional hash functions
+
+- r/map-hash
+- r/filter-hash
+- r/select-keys
+- r/get-in
+
 ## Functional patterns
 
 - r/iterate
