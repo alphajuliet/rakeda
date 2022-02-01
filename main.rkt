@@ -18,7 +18,6 @@
 
 (define r/curry (curry (λ (f a b) (f a b))))
 (define r/curryN (curry (λ (f . args) (apply f args))))
-#;(define r/c (curry (λ (f x . y) (apply f (cons x y)))))
 
 ;;-----------------------
 ;; Logic functions
@@ -69,15 +68,17 @@
   ;; Generic map that is polymorphic across lists and values
   ;; map+ :: (a → b) → a → b
   ;; map+ :: (a → b) → [a] → [b]
-  (if (list? x)
-      (r/map f x)
-      (f x)))
+  (cond
+    [(list? x) (r/map f x)]
+    [else (f x)]))
+
 ;;-----------------------
 ;; Additional list functions
 
 (define r/zip (curry map list))
 
 (define/curry (r/zip-with fn lst1 lst2)
+  ;; r/zip-with :: (a -> b -> c) -> [a] -> [b] -> [c]
   (map (curry apply fn) (r/zip lst1 lst2)))
 
 (define r/flatzip (compose flatten r/zip))
@@ -112,6 +113,7 @@
   ;; r/rotate-left :: [a] -> [a]
   (r/append (cdr lst)
             (list (car lst))))
+
 (define (r/rotate-right lst)
   ;; r/rotate-right :: [a] -> [a]
   (r/append (list (r/last lst))
@@ -124,7 +126,10 @@
 ;;-----------------------
 ;; Additional hash functions
 
-(define r/map-hash (r/flip hash-map))
+;; Map over hash values
+;; r/map-hash :: (k -> v -> a) -> Hash k v -> Hash k a
+(define (r/map-hash fn h)
+  (apply hash (flatten (r/zip (hash-keys h) (hash-map h fn)))))
 
 (define (r/filter-hash fn h)
   ;; Filter a hash based on the given key/value pair
@@ -139,6 +144,13 @@
   (for/hash ([(key value) (in-hash h)]
              #:when (r/in? key key-list))
     (values key value)))
+
+(define (r/get-in hsh lst)
+  ;; Get a deep hash item
+  ;; e.g. (r/get-in '(one two) h)
+  (foldl (λ (r h) (hash-ref h r))
+         hsh
+         lst))
 
 ;;-----------------------
 ;; Functional patterns
