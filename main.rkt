@@ -1,6 +1,6 @@
 #lang racket/base
 ; main.rkt
-; Develop a similar set of Ramda JS functions in Racket
+; A set of useful FP definitions, taken from Javascript, Clojure, and J
 ; Andrew 2018-06-23 
 
 (provide (all-defined-out))
@@ -27,11 +27,34 @@
 (define/curry (constant x _) x)
 
 (define r/eq? (r/curry eq?))
-(define r/not-eq? (r/curry (compose1 not eq?)))
+(define r/not-eq? (r/curry (negate eq?)))
 
 ; Reverse two arguments
 (define/curry (r/flip f a b)
   (apply f (list b a)))
+
+;;-----------------------
+;; Functions from J
+
+(define (r/hook f g . x)
+  ;; Hook from J
+  (if (= 1 (length x))
+      (f (first x) (g (first x)))
+      (f (first x) (g (second x)))))
+
+(define (r/train f g h . x)
+  ;; Train from J
+  (if (= 1 (length x))
+      (g (f (first x)) (h (first x)))
+      (g (f (first x)) (h (second x)))))
+
+(define (r/appose f g x y)
+  ;; Dyadic f&:g from J
+  (f (g x) (g y)))
+
+(define/curry (r/~ f x)
+  ;; Reflexive from J (~)
+  (f x x))
 
 ;;-----------------------
 ;; Renamed functions, curried if more than one argument, and some with arguments flipped
@@ -127,12 +150,12 @@
 ;; Create a hash from a list of keys and a list of values
 ;; r/create-hash :: List a -> List b -> Hash a b
 (define r/create-hash
-  (compose (curry apply hash) r/zip))
+  (compose (curry apply hash) r/flatzip))
 
 ;; Map over hash values
 ;; r/map-hash :: (k -> v -> a) -> Hash k v -> Hash k a
 (define (r/map-hash fn h)
-  (apply hash (flatten (r/zip (hash-keys h) (hash-map h fn)))))
+  (r/create-hash (hash-keys h) (map fn (hash-values h))))
 
 (define (r/filter-hash fn h)
   ;; Filter a hash based on the given key/value pair
@@ -148,24 +171,27 @@
              #:when (r/in? key key-list))
     (values key value)))
 
-(define (r/get-in hsh lst)
-  ;; Get a deep hash item
-  ;; e.g. (r/get-in '(one two) h)
-  (foldl (λ (r h) (hash-ref h r))
+(define (r/get-in hsh path)
+  ;; Get a deep item in a complex data structure
+  ;; e.g. (r/get-in '(a 1 b) coll)
+  (foldl (λ (r coll)
+           (if (list? coll)
+               (list-ref coll r)
+               (hash-ref coll r)))
          hsh
-         lst))
+         path))
 
 ;;-----------------------
 ;; Functional patterns
 
 (define (r/iterate fn n x)
-;; Apply a function n times to x
-;; @@TODO Create instead a lazy sequence without needing n
-;; (r/iterate fn n x) → '(x (fn x) (fn (fn x)) ... (fn^n x))
+  ;; Apply a function n times to x
+  ;; @@TODO Create instead a lazy sequence without needing n
+  ;; (r/iterate fn n x) → '(x (fn x) (fn (fn x)) ... (fn^n x))
   (for/fold ([acc (list x)])
             ([i (range n)])
-            (let ([y (fn (last acc))])
-              (append acc (list y)))))
+    (let ([y (fn (last acc))])
+      (append acc (list y)))))
 
 (define/curry (r/juxt fs x)
   ;; r/juxt :: [(a -> b)] -> a -> [b]
@@ -178,9 +204,11 @@
 (define r/-       (r/curry -))
 (define r/*       (r/curry *))
 (define r/div     (r/curry /))
+(define (r/neg x) (- x))
 (define r/expt    (r/curry expt))
 (define r/modulo  (r/curry modulo))
+(define r/squ     (r/~ *))
 (define r/=       (r/curry =))
-(define r/!=      (r/curry (compose1 not =)))
+(define r/!=      (r/curry (negate =)))
 
 ; The End

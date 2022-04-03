@@ -13,7 +13,10 @@
   (test-case "Logic functions"
              (define f (r/eq? 5))
              (check-equal? (f 6) #f)
-             (check-equal? (true 34) #t))
+             (check-equal? (true 34) #t)
+             (check-equal? (r/hook + (r/* 2) 3 4) 11)
+             (check-equal? (r/train (r/+ 2) r/* add1 3 4) 25)
+             (check-equal? (r/appose r/+ (r/* 2) 3 4) 14))
 
   (test-case "r/flip"
              (check-equal? (r/flip - 10 4) -6))
@@ -98,12 +101,24 @@
 
   (test-case "Math"
              (check-equal? (r/+ 2 3) 5)
-             (define inc (r/+ 1))
-             (check-equal? (inc 2) 3))
+             (let ([inc (r/+ 1)])
+               (check-equal? (inc 2) 3))
+             (check-equal? (r/squ 5) 25))
 
   (test-case "Composition"
              (define f (compose (r/+ 1) (r/* 3)))
              (check-equal? (f 4) 13))
+
+  (test-case "Hashes"
+             (define h1 (r/create-hash '(a b) '(1 2)))
+             (define h2 (hash 'a 1 'b (list 5 6)))
+             (check-equal? h1 (hash 'a 1 'b 2))
+             (check-equal? (r/map-hash add1 h1)
+                           (hash 'a 2 'b 3))
+             (check-equal? (r/filter-hash (λ (_ v) (odd? v)) h1)
+                           (hash 'a 1))
+             (check-equal? (r/get-in h2 '(b 1)) 6))
+  
   )
 
 (run-tests rakeda-tests)
