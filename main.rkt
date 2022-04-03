@@ -7,9 +7,7 @@
 
 (require racket/list
          racket/string
-         racket/function
-         ;; "compose.rkt"
-         )
+         racket/function)
 
 ;;-----------------------
 ; define/curry → a pre-curried function definition
@@ -126,6 +124,11 @@
 ;;-----------------------
 ;; Additional hash functions
 
+;; Create a hash from a list of keys and a list of values
+;; r/create-hash :: List a -> List b -> Hash a b
+(define r/create-hash
+  (compose (curry apply hash) r/zip))
+
 ;; Map over hash values
 ;; r/map-hash :: (k -> v -> a) -> Hash k v -> Hash k a
 (define (r/map-hash fn h)
@@ -165,7 +168,7 @@
               (append acc (list y)))))
 
 (define/curry (r/juxt fs x)
-  ;; r/juxt :: [(a -> *)] -> a -> [*]
+  ;; r/juxt :: [(a -> b)] -> a -> [b]
   (map (λ (f) (f x)) fs))
 
 ;;-----------------------
