@@ -96,6 +96,10 @@
 ;;-----------------------
 ;; Additional list functions
 
+(define (r/concat a b)
+  (cond [(and (list? a) (list? b)) (append a b)]
+        [else (append a (list b))]))
+
 (define r/zip (curry map list))
 
 (define/curry (r/zip-with fn lst1 lst2)
@@ -121,6 +125,21 @@
 (define (r/repeatedly n f)
   (for/list ([_ (in-range n)])
     (f)))
+
+(define (r/choose-no-replace n lst)
+  ;; Choose n elements from lst without replacement
+  ;; r/choose-no-replace :: Int -> [a] -> [a]
+  (first
+   (foldl (λ (_ acc)
+           (let ([x (r/random-element (second acc))])
+             (list (r/concat (first acc) x)
+                   (remove x (second acc)))))
+           (list '() lst)
+           (range n))))
+
+(define (r/dup n x)
+  ;; Duplicate x n times
+  (build-list n (λ (_) x)))
 
 ;; List union and intersections
 (define r/union (compose r/uniq append))
