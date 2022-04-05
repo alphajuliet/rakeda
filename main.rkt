@@ -96,9 +96,14 @@
 ;;-----------------------
 ;; Additional list functions
 
-(define (r/concat a b)
+(define/curry (r/concat a b)
   (cond [(and (list? a) (list? b)) (append a b)]
-        [else (append a (list b))]))
+        [(and (not (list? a)) (list? b)) (append (list a) b)]
+        [(and (list? a) (not (list? b))) (append a (list b))]
+        [else (append (list a) (list b))]))
+
+(define/curry (r/prepend lst x)
+  (r/concat x lst))
 
 (define r/zip (curry map list))
 
@@ -110,9 +115,6 @@
 
 (define (r/random-element lst)
   (r/nth (random (length lst)) lst))
-
-(define/curry (r/prepend x lst)
-  (r/append (list x) lst))
 
 (define/curry (r/in? x lst)
   ;; r/in? :: a -> [a] -> Boolean

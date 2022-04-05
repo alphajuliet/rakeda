@@ -67,13 +67,19 @@
   (test-case "r/sort"
              (check-equal? (r/sort < '(3 2 1))
                            '(1 2 3)))
-  (test-case "r/uniq"
+  (test-case "r/uniq and r/dup"
              (check-equal? (r/uniq '(5 1 2 2 3 4 4))
-                           '(5 1 2 3 4)))
-  (test-case "r/prepend"
-             (check-equal? (r/prepend 1 '(2 3))
-                           '(1 2 3))
-             (check-equal? (r/prepend 1 '()) '(1)))
+                           '(5 1 2 3 4))
+             (check-equal? (r/dup 4 99) '(99 99 99 99)))
+  
+  (test-case "r/prepend and r/concat"
+             (check-equal? (r/prepend '(2 3) 1) '(1 2 3))
+             (check-equal? (r/prepend '() 1) '(1))
+             (check-equal? (r/concat '(1 2) 3) '(1 2 3))
+             (check-equal? (r/concat '(1 2) '(3 4)) '(1 2 3 4))
+             (check-equal? (r/concat '() 1) '(1))
+             (check-equal? (r/concat 1 2) '(1 2)))
+
   (test-case "r/in?"
              (check-equal? (r/in? 2 '(1 2 3)) #t)
              (check-equal? (r/in? 4 '(1 2 3)) #f)
