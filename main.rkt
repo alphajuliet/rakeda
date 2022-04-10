@@ -115,6 +115,7 @@
 
 (define (r/random-element lst)
   (r/nth (random (length lst)) lst))
+(define r/choose r/random-element)
 
 (define/curry (r/in? x lst)
   ;; r/in? :: a -> [a] -> Boolean
