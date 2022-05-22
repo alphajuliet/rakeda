@@ -85,13 +85,7 @@
 (define r/reduce (r/curryN foldl))
 (define r/reduce-right (r/curryN foldr))
 
-(define/curry (map+ f x)
-  ;; Generic map that is polymorphic across lists and values
-  ;; map+ :: (a → b) → a → b
-  ;; map+ :: (a → b) → [a] → [b]
-  (cond
-    [(list? x) (r/map f x)]
-    [else (f x)]))
+
 
 ;;-----------------------
 ;; Additional list functions
@@ -193,6 +187,15 @@
              #:when (r/in? key key-list))
     (values key value)))
 
+(define (r/hash-lookup h value)
+  ;; Return the first key that has the given value, otherwise #f
+  ;; r/hash-lookup :: (Hash k v) -> v -> k
+  (let ([lst (filter (λ (k) (equal? value (hash-ref h k)))
+                     (hash-keys h))])
+    (if (empty? lst)
+        #f
+        (first lst))))
+
 (define (r/get-in hsh path)
   ;; Get a deep item in a complex data structure
   ;; e.g. (r/get-in '(a 1 b) coll)
@@ -202,6 +205,19 @@
                (hash-ref coll r)))
          hsh
          path))
+
+;;-----------------------
+;; Polymorphic functions
+
+(define/curry (map+ f x)
+  ;; Generic map that is polymorphic across lists and values
+  ;; map+ :: (a → b) → a → b
+  ;; map+ :: (a → b) → [a] → [b]
+  ;; map+ :: (a -> b) -> Hash k a -> Hash k b
+  (cond
+    [(list? x) (r/map f x)]
+    [(hash? x) (r/map-hash f x)]
+    [else (f x)]))
 
 ;;-----------------------
 ;; Functional patterns
@@ -230,6 +246,7 @@
 (define r/expt    (r/curry expt))
 (define r/modulo  (r/curry modulo))
 (define r/squ     (r/~ *))
+(define (r/round-to x n) (* n (round (/ x n))))
 (define r/=       (r/curry =))
 (define r/!=      (r/curry (negate =)))
 

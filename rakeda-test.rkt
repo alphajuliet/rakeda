@@ -39,6 +39,14 @@
              (check-equal? (g '(1 2 3))
                            '(1 3))
              (check-equal? (r/reduce + 1 '(1 2 3)) 7))
+
+  (test-case "map+"
+             (define h1 (r/create-hash '(a b) '(1 2)))
+             (check-equal? (map+ add1 4) 5)
+             (check-equal? (map+ add1 '(1 2 3)) '(2 3 4))
+             (check-equal? (map+ add1 h1)
+                           (hash 'a 2 'b 3)))
+
   (test-case "r/zip"
              (check-equal? (r/zip '(1 2) '(3 4))
                            '((1 3) (2 4))))
@@ -51,7 +59,7 @@
   (test-case "r/juxt"
              (define fns (list (r/+ 2) (r/* 2)))
              (check-equal? (r/juxt fns 10) '(12 20)))
-  
+
   (test-case "r/take r/drop"
              (check-equal? (r/take 2 '(1 2 3))
                            '(1 2))
@@ -109,7 +117,8 @@
              (check-equal? (r/+ 2 3) 5)
              (let ([inc (r/+ 1)])
                (check-equal? (inc 2) 3))
-             (check-equal? (r/squ 5) 25))
+             (check-equal? (r/squ 5) 25)
+             #;(check-equal? (r/round-to 5.123 0.1) 5.12))
 
   (test-case "Composition"
              (define f (compose (r/+ 1) (r/* 3)))
