@@ -48,7 +48,7 @@
       (g (f (first x)) (h (first x)))
       (g (f (first x)) (h (second x)))))
 
-(define (r/appose f g x y)
+(define/curry (r/appose f g x y)
   ;; Dyadic f&:g from J
   (f (g x) (g y)))
 
