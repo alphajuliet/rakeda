@@ -85,8 +85,6 @@
 (define r/reduce (r/curryN foldl))
 (define r/reduce-right (r/curryN foldr))
 
-
-
 ;;-----------------------
 ;; Additional list functions
 
@@ -109,7 +107,18 @@
 
 (define (r/random-element lst)
   (r/nth (random (length lst)) lst))
+
 (define r/choose r/random-element)
+
+(define (r/enumerate wlist)
+  ;; Enumerate a weighted list stored in a hash
+  ;; enumerate :: Hash a b -> List a
+  (flatten
+   (for/list ([(elt n) (in-hash wlist)])
+     (build-list n (λ (_) elt)))))
+
+(define r/random-weighted
+  (compose1 r/choose r/enumerate))
 
 (define/curry (r/in? x lst)
   ;; r/in? :: a -> [a] -> Boolean
