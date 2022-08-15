@@ -133,15 +133,13 @@
     (f)))
 
 (define (r/choose-no-replace n lst)
-  ;; Choose n elements from lst without replacement
-  ;; r/choose-no-replace :: Int -> [a] -> [a]
   (first
    (foldl (λ (_ acc)
-           (let ([x (r/random-element (second acc))])
-             (list (r/concat (first acc) x)
-                   (remove x (second acc)))))
-           (list '() lst)
-           (range n))))
+            (let ([lst1 (shuffle (second acc))])
+              (list (append (car acc) (list (car lst1)))
+                    (cdr lst1))))
+          (list '() lst)
+          (range n))))
 
 (define (r/dup n x)
   ;; Duplicate x n times
@@ -258,5 +256,9 @@
 (define (r/round-to x n) (* n (round (/ x n))))
 (define r/=       (r/curry =))
 (define r/!=      (r/curry (negate =)))
+(define r/inc (curry + 1))
+(define r/dec (λ (n) (- n 1)))
+(define r/zero? (r/eq? 0))
+(define r/sum (λ (lst) (foldl + 0 lst)))
 
 ; The End
