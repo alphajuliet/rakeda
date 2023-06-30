@@ -41,11 +41,15 @@
              (check-equal? (r/reduce + 1 '(1 2 3)) 7))
 
   (test-case "map+"
-             (define h1 (r/create-hash '(a b) '(1 2)))
+             (define h1 (r/zipmap '(a b) '(1 2)))
              (check-equal? (map+ add1 4) 5)
              (check-equal? (map+ add1 '(1 2 3)) '(2 3 4))
              (check-equal? (map+ add1 h1)
                            (hash 'a 2 'b 3)))
+
+  (test-case "overlapping pairs"
+            (check-equal? (r/overlapping-pairs '()) '())
+            (check-equal? (r/overlapping-pairs (range 3)) '((0 1) (1 2))))
 
   (test-case "r/zip"
              (check-equal? (r/zip '(1 2) '(3 4))
@@ -65,6 +69,7 @@
                            '(1 2))
              (check-equal? (r/drop 2 '(1 2 3 4))
                            '(3 4)))
+
   (test-case "r/any and r/all"
              (check-equal? (r/any odd? '(1 2 3)) #t)
              (define f (r/any odd?))
@@ -125,7 +130,7 @@
              (check-equal? (f 4) 13))
 
   (test-case "Hashes"
-             (define h1 (r/create-hash '(a b) '(1 2)))
+             (define h1 (r/zipmap '(a b) '(1 2)))
              (define h2 (hash 'a 1 'b (list 5 6)))
              (check-equal? h1 (hash 'a 1 'b 2))
              (check-equal? (r/map-hash add1 h1)

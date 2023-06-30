@@ -97,6 +97,11 @@
 (define/curry (r/prepend lst x)
   (r/concat x lst))
 
+(define (r/overlapping-pairs lst)
+  (if (empty? lst)
+      '()
+      (map r/concat (drop-right lst 1) (rest lst))))
+
 (define r/zip (curry map list))
 
 (define/curry (r/zip-with fn lst1 lst2)
@@ -172,13 +177,13 @@
 
 ;; Create a hash from a list of keys and a list of values
 ;; r/create-hash :: List a -> List b -> Hash a b
-(define r/create-hash
+(define r/zipmap
   (compose (curry apply hash) r/flatzip))
 
 ;; Map over hash values
 ;; r/map-hash :: (k -> v -> a) -> Hash k v -> Hash k a
 (define (r/map-hash fn h)
-  (r/create-hash (hash-keys h) (map fn (hash-values h))))
+  (r/zipmap (hash-keys h) (map fn (hash-values h))))
 
 (define (r/filter-hash fn h)
   ;; Filter a hash based on the given key/value pair
